@@ -40,6 +40,8 @@ paths:
           description: Invalid or missing information
         409:
           description: User already registered
+        500:
+          description: Server error
 
   /user/login:
     post:
@@ -72,6 +74,8 @@ paths:
               properties:
                 token:
                   type: string
+        400:
+          description: No or invalid credentials provided
 
   /user/me:
     get:
