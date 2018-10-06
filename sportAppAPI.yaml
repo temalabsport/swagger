@@ -115,8 +115,6 @@ definitions:
         type: string
       fullName:
         type: string
-      introduction:
-        type: string
   
   Sport:
     type: object
