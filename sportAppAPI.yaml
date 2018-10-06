@@ -67,13 +67,12 @@ paths:
       responses:
         200:
           description: Correct credentials, login successful
+          headers:
+            x-auth-token:
+              type: string
           schema:
             allOf:
             - $ref: '#/definitions/User'
-            - type: object
-              properties:
-                token:
-                  type: string
         400:
           description: No or invalid credentials provided
 
