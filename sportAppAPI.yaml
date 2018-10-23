@@ -7,14 +7,17 @@ info:
 tags:
 - name: user
   description: Endpoints connected to User
+- name: event
+  description: Endpoints connected to Event
+- name: sport
+  description: Endpoints connected to Sport
 
 paths:
 
-  /user/register:
+  /api/user/register:
     post:
       tags:
       - user
-      operationId: registerUser
       description: |
         Registers a new User on the website
       consumes:
@@ -43,11 +46,10 @@ paths:
         500:
           description: Server error
 
-  /user/login:
+  /api/user/login:
     post:
       tags:
       - user
-      operationId: loginUser
       description: |
         A User can login, if correct credentials are provided.
       consumes:
@@ -71,12 +73,11 @@ paths:
             x-auth-token:
               type: string
           schema:
-            allOf:
-            - $ref: '#/definitions/User'
+            $ref: '#/definitions/User'
         400:
           description: No or invalid credentials provided
 
-  /user/me:
+  /api/user/me:
     get:
       tags:
       - user
@@ -85,8 +86,6 @@ paths:
         Gets the current logged in User
       produces:
       - application/json
-      consumes:
-      - header
       parameters:
       - in: header
         name: x-auth-token
@@ -98,16 +97,139 @@ paths:
           schema:
             $ref: '#/definitions/User'
         401:
-          description: No or invalid token provided
-
+          description: Unauthorized
+  
+  /api/sports:
+    get:
+      tags:
+      - sport
+      operationId: getSports
+      description: |
+        Returns the currently supported sport list
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-auth-token
+        type: string
+        required: true
+      responses:
+        200:
+          description: List of all sports
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Sport'
+        401:
+          description: Unauthorized
+        500:
+          description: Server error
+  
+  /api/event/search:
+    get:
+      tags:
+      - event
+      operationId: searchEvent
+      description: |
+        Can search in the current events
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-auth-token
+        type: string
+        required: true
+      - name: sport
+        in: query
+        type: string
+        default: all
+      - name: dateFrom
+        in: query
+        type: string
+        format: date-time
+        default: current time
+      - name: dateTo
+        in: query
+        type: string
+        format: date-time
+        default: empty
+      - name: orderBy
+        in: query
+        type: string
+        enum: [ date, deadline, name, location ]
+        default: date
+      - name: pageSize
+        in: query
+        type: number
+        minimum: 1
+        maximum: 100
+        default: 10
+      - name: page
+        in: query
+        type: number
+        minimum: 1
+        default: 1
+      
+      responses:
+        200:
+          description: Search results
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Event'
+        400:
+          description: Invalid or missing information
+        401:
+          description: Unauthorized
+        500:
+          description: Server Error
+  
+  /api/event/new:
+    post:
+      tags:
+      - event
+      description: |
+        Registers a new Event
+      consumes:
+      - application/json
+      parameters:
+      - in: header
+        name: x-auth-token
+        type: string
+        required: true
+      - in: body
+        name: newEvent
+        schema:
+          type: object
+          properties:
+            sport:
+              type: string
+            name:
+              type: string
+            location:
+              type: string
+            date:
+              type: string
+              format: date-time
+            deadline:
+              type: string
+              format: date-time
+            description:
+              type: string
+              
+      responses:
+        201:
+          description: Event registered successfully
+        400:
+          description: Invalid or missing information
+        401:
+          description: Unauthorized
+        500:
+          description: Server error
 definitions:
-
   User:
     type: object
     properties:
-      id:
-        type: integer
-        format: int32
       userName:
         type: string
       email:
@@ -117,49 +239,39 @@ definitions:
   
   Sport:
     type: object
-    required:
-    - id
-    - name
-    - minPlayers
-    - maxPlayers
     properties:
-      id:
-        type: integer
-        format: int32
       name:
         type: string
       minPlayers:
         type: integer
-        format: int32
       maxPlayers:
         type: integer
-        format: int32
   
   Event:
     type: object
     properties:
-      id:
-        type: integer
-        format: int32
-      sport:
-        $ref: '#/definitions/Sport'
-      creator:
-        $ref: '#/definitions/User'
       name:
+        type: string
+      creator:
+        type: string
+      sport:
         type: string
       location:
         type: string
       date:
         type: string
         format: date-time
+      deadline:
+        type: string
+        format: date-time
       description:
         type: string
 
-# Added by API Auto Mocking Plugin
-# host: virtserver.swaggerhub.com
-# basePath: /api
 schemes:
  - https
+# host: sport-temalabor.azurewebsites.net
+# Added by API Auto Mocking Plugin
+# host: sport-temalabor.azurewebsites.net
+basePath: /temalaborsport/sportAPI/1.0.0
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
-basePath: /temalaborsport/test/1.0.0
