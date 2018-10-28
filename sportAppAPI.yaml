@@ -99,6 +99,42 @@ paths:
         401:
           description: Unauthorized
   
+  /api/user/update:
+    put:
+      tags:
+      - user
+      description: |
+        Updates the User's data. Only provide fields, which has to be updated ( currentPassword is always required )
+      consumes:
+      - application/json
+      parameters:
+      - in: header
+        name: x-auth-token
+        type: string
+        required: true
+      - in: body
+        name: updateUser
+        schema:
+          type: object
+          properties:
+            newFullName:
+              type: string
+            newIntroduction:
+              type: string
+            newPassword:
+              type: string
+            currentPassword:
+              type: string
+      responses:
+        201:
+          description: Successfully updated
+        400:
+          description: Invalid or missing information
+        401:
+          description: Unauthorized
+        500:
+          description: Server Error
+  
   /api/user/search:
     get:
       tags:
