@@ -99,6 +99,95 @@ paths:
         401:
           description: Unauthorized
   
+  /api/user/search:
+    get:
+      tags:
+      - user
+      operationId: searchUser
+      description: |
+        Can search in users
+      produces:
+      - application/json
+      parameters:
+      - in: header
+        name: x-auth-token
+        type: string
+        required: true
+      - name: q
+        in: query
+        type: string
+        default: empty
+        description: Keyword, cann occur in userName or fullName
+      - name: orderBy
+        in: query
+        type: string
+        enum: [ userName, fullName ]
+        default: userName
+      - name: pageSize
+        in: query
+        type: number
+        minimum: 1
+        maximum: 100
+        default: 10
+      - name: page
+        in: query
+        type: number
+        minimum: 1
+        default: 1
+      
+      responses:
+        200:
+          description: Search results
+          schema:
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+              totalResults:
+                type: number
+              totalPages:
+                type: number
+        400:
+          description: Invalid or missing information
+        401:
+          description: Unauthorized
+        500:
+          description: Server Error
+  
+  /api/user/findByUserName/{userName}:
+    get:
+      tags:
+      - user
+      description: |
+        Finds the User with given username
+      produces:
+      - application/json
+      parameters:
+      - name: userName
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: User found
+          schema:
+            type: object
+            properties:
+              userName:
+                type: string
+              fullName:
+                type: string
+              introduction:
+                type: string
+        400:
+          description: Invalid or missing information
+        401:
+          description: Unauthorized
+        500:
+          description: Server Error
+  
   /api/sports:
     get:
       tags:
@@ -139,6 +228,11 @@ paths:
         name: x-auth-token
         type: string
         required: true
+      - name: userName
+        in: query
+        type: string
+        default: empty
+        description: Shows only events the user participates on
       - name: sport
         in: query
         type: string
@@ -174,9 +268,16 @@ paths:
         200:
           description: Search results
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Event'
+            type: object
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Event'
+              totalResults:
+                type: number
+              totalPages:
+                type: number
         400:
           description: Invalid or missing information
         401:
@@ -226,13 +327,48 @@ paths:
           description: Unauthorized
         500:
           description: Server error
+
+  /api/event/apply:
+    post:
+      tags:
+      - event
+      description: |
+        Applies a new team for event
+      consumes:
+      - application/json
+      parameters:
+      - in: header
+        name: x-auth-token
+        type: string
+        required: true
+      - in: body
+        name: applyEvent
+        schema:
+          type: object
+          properties:
+            eventID:
+              type: number
+            teamName:
+              type: string
+            members:
+              type: array
+              items:
+                type: string
+      responses:
+        201:
+          description: Applied successfully
+        400:
+          description: Invalid or missing information
+        401:
+          description: Unauthorized
+        500:
+          description: Server error
+      
 definitions:
   User:
     type: object
     properties:
       userName:
-        type: string
-      email:
         type: string
       fullName:
         type: string
@@ -250,6 +386,8 @@ definitions:
   Event:
     type: object
     properties:
+      id:
+        type: number
       name:
         type: string
       creator:
