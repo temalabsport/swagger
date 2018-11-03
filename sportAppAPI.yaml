@@ -283,10 +283,16 @@ paths:
         type: string
         format: date-time
         default: empty
+      - name: lat
+        in: query
+        type: number
+      - name: long
+        in: query
+        type: number
       - name: orderBy
         in: query
         type: string
-        enum: [ date, deadline, name, location ]
+        enum: [ date, deadline, name, location, distance ]
         default: date
       - name: pageSize
         in: query
@@ -343,6 +349,14 @@ paths:
               type: string
             name:
               type: string
+            latitude:
+              type: number
+              minimum: -90
+              maximum: 90
+            longitude:
+              type: number
+              minimum: -180
+              maximum: 180
             location:
               type: string
             date:
@@ -430,8 +444,15 @@ definitions:
         type: string
       sport:
         type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
       location:
         type: string
+      distance:
+        type: number
+        description: can be null
       date:
         type: string
         format: date-time
