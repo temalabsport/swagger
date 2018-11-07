@@ -320,6 +320,10 @@ paths:
                 type: number
               totalPages:
                 type: number
+              latitude:
+                type: number
+              longitude:
+                type: number
         400:
           description: Invalid or missing information
         401:
