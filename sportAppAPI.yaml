@@ -448,6 +448,10 @@ definitions:
         type: string
       sport:
         type: string
+      minTeamSize:
+        type: number
+      maxTeamSize:
+        type: number
       latitude:
         type: number
       longitude:
